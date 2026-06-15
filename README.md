@@ -1,6 +1,6 @@
 # Couple Diary Backend
 
-这是 `py-project-template-poetry` 项目的后端服务工程。
+这是 `py-project-template-poetry` 项目的后端服务工程。 
 
 当前仓库里既包含“项目级”的后端基础设施，也保留了一组新的示例接口用于沉淀工程规范。因此后续做重构或让 LLM 参与开发时，需要特别注意：
 
