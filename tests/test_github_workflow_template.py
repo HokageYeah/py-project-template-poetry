@@ -10,13 +10,13 @@ def test_standalone_github_workflow_template_exists() -> None:
         Path(__file__).resolve().parents[1]
         / ".github"
         / "workflows"
-        / "backend-couple-diary-b-ci.yml"
+        / "py-project-template-poetry.yml"
     )
 
     assert workflow_path.exists()
 
     content = workflow_path.read_text(encoding="utf-8")
-    assert "name: backend-couple-diary-b-ci" in content
+    assert "name: py-project-template-poetry" in content
     assert "actions/setup-python@v5" in content
     assert 'python-version: "3.13"' in content
     assert "poetry install --no-interaction" in content
