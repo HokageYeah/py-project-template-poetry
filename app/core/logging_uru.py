@@ -6,22 +6,8 @@ from datetime import datetime
 from pathlib import Path
 
 from loguru import logger
-from pydantic import BaseModel
 
 from app.core.config import PROJECT_ROOT, settings
-
-
-class LoggingSettings(BaseModel):
-    """日志基础配置。
-
-    这里先保留一个很轻量的配置模型，方便后续如果要接环境变量或配置文件，
-    可以在这个位置继续扩展，而不需要再到 setup_logging() 里硬改。
-    """
-
-    LOGGING_LEVEL: str = "INFO"
-
-
-logging_settings = LoggingSettings()
 
 THIRD_PARTY_WARNING_LOGGERS = (
     "uvicorn",
@@ -115,8 +101,13 @@ def setup_logging() -> None:
     """
     logger.remove()
 
-    log_level = resolve_log_level(logging_settings.LOGGING_LEVEL, debug=settings.DEBUG)
-    enable_diagnose = should_enable_diagnose(debug=settings.DEBUG)
+    logging_config = settings.logging
+    application_config = settings.application
+    log_level = resolve_log_level(
+        logging_config.logging_level,
+        debug=application_config.debug,
+    )
+    enable_diagnose = should_enable_diagnose(debug=application_config.debug)
     run_log_path, error_log_path = build_log_file_paths(project_root=PROJECT_ROOT)
     ensure_log_directories(run_log_path, error_log_path)
 

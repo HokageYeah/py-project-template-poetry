@@ -1,6 +1,6 @@
 # Couple Diary Backend
 
-这是 `py-project-template-poetry` 项目的后端服务工程。 
+这是 `couple-diary` 项目的后端服务工程。
 
 当前仓库里既包含“项目级”的后端基础设施，也保留了一组新的示例接口用于沉淀工程规范。因此后续做重构或让 LLM 参与开发时，需要特别注意：
 
@@ -130,7 +130,7 @@ poetry run ruff check app tests
 适合长期复用，信息更完整，能明显降低 LLM 把示例模块和正式业务模块混写的概率。
 
 ```text
-你现在在维护 py-project-template-poetry 这个 FastAPI 后端模板工程。
+你现在在维护 backend/couple-diary-b 这个 FastAPI 后端模板工程。
 
 在开始任何改动前，请先遵守以下工程约束：
 
@@ -484,9 +484,9 @@ poetry run pre-commit run --all-files
 
 远端 CI 主要解决“代码推上去之后，仓库还能不能稳定通过统一校验”。
 
-- `.github/workflows/py-project-template-poetry.yml` 是当前后端模板工程的 GitHub Actions 持续集成配置文件
-- `py-project-template-poetry/.github/workflows/py-project-template-poetry.yml` 是给“后端工程单独上传到 GitHub 作为模板仓库”时使用的同等 CI 模板
-- 当 `py-project-template-poetry/` 下的代码，或者这个 workflow 文件本身发生 `push` / `pull_request` 变更时，它会自动触发
+- `.github/workflows/backend-couple-diary-b-ci.yml` 是当前后端模板工程的 GitHub Actions 持续集成配置文件
+- `backend/couple-diary-b/.github/workflows/backend-couple-diary-b-ci.yml` 是给“后端工程单独上传到 GitHub 作为模板仓库”时使用的同等 CI 模板
+- 当 `backend/couple-diary-b/` 下的代码，或者这个 workflow 文件本身发生 `push` / `pull_request` 变更时，它会自动触发
 - 它会在 GitHub 提供的 Linux 环境里执行统一检查，避免不同人本地环境差异导致的误判
 
 它当前主要负责四件事：
@@ -504,9 +504,9 @@ poetry run pre-commit run --all-files
 
 两份 workflow 的分工如下：
 
-- 仓库根目录 `.github/workflows/py-project-template-poetry.yml`
+- 仓库根目录 `.github/workflows/backend-couple-diary-b-ci.yml`
   用于当前这个 monorepo，只在 `backend/couple-diary-b/**` 发生变更时触发
-- 子工程目录 `py-project-template-poetry/.github/workflows/py-project-template-poetry.yml`
+- 子工程目录 `backend/couple-diary-b/.github/workflows/backend-couple-diary-b-ci.yml`
   用于你后续把这个后端工程单独上传到 GitHub 后直接复用，不再依赖 monorepo 的路径前缀或工作目录
 
 #### 推荐协作方式
@@ -514,7 +514,7 @@ poetry run pre-commit run --all-files
 推荐把这两层配合起来使用：
 
 1. 本地改代码时，优先跑 `pre-commit`、`ruff`、`pytest`
-2. 提交代码后，让 `py-project-template-poetry.yml` 再做一次远端自动校验
+2. 提交代码后，让 `backend-couple-diary-b-ci.yml` 再做一次远端自动校验
 3. 如果远端 CI 失败，以 CI 结果为准继续修正
 
 ### 当前测试覆盖
@@ -623,6 +623,7 @@ SLOW_REQUEST_THRESHOLD_MS=800
 - `settings.application`：应用身份信息，例如项目名、描述、版本、接口前缀、响应版本、环境
 - `settings.server`：服务监听信息，例如 `host`、`port`、`reload`
 - `settings.cors`：跨域配置，例如 `allow_origins`
+- `settings.logging`：日志系统基础配置，例如 `logging_level`
 - `settings.request_logging`：请求链路日志配置，例如 `request_id_header`、`slow_request_threshold_ms`
 - `settings.database`：数据库运行时配置，例如驱动、主机、库名、连接池参数
 
@@ -643,7 +644,7 @@ print(database_config.database)
 如果你要在本机放真实开发库密码，推荐新建：
 
 ```bash
-py-project-template-poetry/.env.development.local
+backend/couple-diary-b/.env.development.local
 ```
 
 示例：
@@ -1032,7 +1033,7 @@ GET /readyz
 ├── .env.production.local            # 生产环境本地覆盖文件（可选，本地使用，不提交）
 ├── .github/
 │   └── workflows/
-│       └── py-project-template-poetry.yml  # 后端工程独立发布到 GitHub 时使用的 CI 模板
+│       └── backend-couple-diary-b-ci.yml  # 后端工程独立发布到 GitHub 时使用的 CI 模板
 ├── .gitignore                       # 项目级忽略规则，防止缓存、日志、虚拟环境误提交
 ├── alembic.ini                      # Alembic 主配置文件
 ├── pyproject.toml                   # Poetry 项目配置与工具链配置
@@ -1050,7 +1051,7 @@ GET /readyz
 - `app/core/` 是后端工程约束最集中的目录，后续如果要改统一响应、日志策略、环境配置，优先看这里。
 - `app/core/api_response.py` 负责统一成功/失败响应的构造；改接口返回规范时，优先看这里。
 - `app/core/config.py` 负责环境识别、`.env` 加载顺序、全局配置读取；改环境切换行为时，优先看这里。
-- `app/core/config.py` 现在同时保留“扁平字段 + 分组视图”两套访问方式；新增代码优先使用 `settings.application / server / cors / request_logging / database`。
+- `app/core/config.py` 现在同时保留“扁平字段 + 分组视图”两套访问方式；新增代码优先使用 `settings.application / server / cors / logging / request_logging / database`。
 - `app/core/logging_uru.py` 负责日志初始化、日志级别策略、日志文件路径规则；改日志行为时，优先看这里。
 - `app/scripts/` 是数据库和环境切换的标准入口，个人开发、团队协作、LLM 自动化都尽量通过这里操作，而不是手敲零散命令。
 - `app/scripts/set_env.py` 是最常用的开发脚本入口，负责把当前环境显式传给子命令。

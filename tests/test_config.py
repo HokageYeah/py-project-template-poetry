@@ -120,3 +120,9 @@ def test_database_config_group_is_stable() -> None:
     assert database_config.max_overflow == config.settings.DB_MAX_OVERFLOW
     assert database_config.pool_recycle == config.settings.DB_POOL_RECYCLE
     assert database_config.pool_timeout == config.settings.DB_POOL_TIMEOUT
+
+
+def test_logging_config_group_is_stable() -> None:
+    logging_config = config.settings.logging
+
+    assert logging_config.logging_level == config.settings.LOGGING_LEVEL

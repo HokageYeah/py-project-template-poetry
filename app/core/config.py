@@ -144,6 +144,17 @@ class RequestLoggingConfig(BaseModel):
     slow_request_threshold_ms: int
 
 
+class LoggingConfig(BaseModel):
+    """日志系统基础配置。
+
+    这里先保持轻量，只收口当前日志初始化真正依赖的最核心字段。
+    如果后续继续扩展日志落盘策略、保留天数或第三方日志级别，
+    也优先继续放到这个分组里统一管理。
+    """
+
+    logging_level: str
+
+
 class CorsConfig(BaseModel):
     """跨域配置。"""
 
@@ -189,6 +200,7 @@ class Settings(BaseSettings):
     RELOAD: bool = False
     REQUEST_ID_HEADER: str = "X-Request-ID"
     SLOW_REQUEST_THRESHOLD_MS: int = 800
+    LOGGING_LEVEL: str = "INFO"
     BACKEND_CORS_ORIGINS: str = (
         "http://localhost,"
         "http://127.0.0.1,"
@@ -266,6 +278,11 @@ class Settings(BaseSettings):
     def cors(self) -> CorsConfig:
         """返回跨域配置分组。"""
         return CorsConfig(allow_origins=self.resolved_cors_origins)
+
+    @property
+    def logging(self) -> LoggingConfig:
+        """返回日志系统配置分组。"""
+        return LoggingConfig(logging_level=self.LOGGING_LEVEL)
 
     @property
     def database(self) -> DatabaseRuntimeConfig:

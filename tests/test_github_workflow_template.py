@@ -10,13 +10,13 @@ def test_standalone_github_workflow_template_exists() -> None:
         Path(__file__).resolve().parents[1]
         / ".github"
         / "workflows"
-        / "py-project-template-poetry.yml"
+        / "backend-couple-diary-b-ci.yml"
     )
 
     assert workflow_path.exists()
 
     content = workflow_path.read_text(encoding="utf-8")
-    assert "name: py-project-template-poetry" in content
+    assert "name: backend-couple-diary-b-ci" in content
     assert "actions/setup-python@v5" in content
     assert 'python-version: "3.13"' in content
     assert "poetry install --no-interaction" in content
@@ -24,5 +24,5 @@ def test_standalone_github_workflow_template_exists() -> None:
     assert "poetry run pytest" in content
 
     # 这是给“独立仓库”使用的 workflow，因此不应再依赖 monorepo 的子目录前缀。
-    assert "py-project-template-poetry/**" not in content
-    assert "working-directory: py-project-template-poetry" not in content
+    assert "backend/couple-diary-b/**" not in content
+    assert "working-directory: backend/couple-diary-b" not in content
