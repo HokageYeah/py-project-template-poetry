@@ -25,11 +25,12 @@ def test_bootstrap_database_falls_back_to_create_all_when_alembic_fails() -> Non
                 cmd=["alembic", "upgrade", "head"],
             ),
             None,
+            None,
         ]
 
         set_env.bootstrap_database(env)
 
-    assert mock_run_command.call_count == 3
+    assert mock_run_command.call_count == 4
     assert mock_run_command.call_args_list[0].args[0] == [
         set_env.sys.executable,
         "-m",
@@ -44,6 +45,11 @@ def test_bootstrap_database_falls_back_to_create_all_when_alembic_fails() -> Non
         set_env.sys.executable,
         "-m",
         "app.scripts.init_database",
+    ]
+    assert mock_run_command.call_args_list[3].args[0] == [
+        "alembic",
+        "stamp",
+        "head",
     ]
 
 
