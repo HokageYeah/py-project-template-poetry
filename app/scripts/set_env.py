@@ -63,7 +63,9 @@ def bootstrap_database(env: dict[str, str]) -> None:
     except subprocess.CalledProcessError as exc:
         logger.warning("Alembic 迁移失败，准备回退到 create_all 建表。错误: %s", exc)
         run_command([sys.executable, "-m", "app.scripts.init_database"], env)
-        logger.info("create_all 建表流程执行完成")
+        logger.info("create_all 建表流程执行完成，准备同步 Alembic 版本号")
+        run_command(["alembic", "stamp", "head"], env)
+        logger.info("Alembic 版本号已同步到最新")
 
 
 def invoke_database_command(

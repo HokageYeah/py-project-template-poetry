@@ -11,7 +11,7 @@ project_root = Path(__file__).resolve().parent.parent
 if str(project_root) not in sys.path:
     sys.path.append(str(project_root))
 
-from app.config.database_config import DATABASE_URL
+from app.config.database_config import get_database_url
 from app.db.metadata import get_target_metadata
 
 config = context.config
@@ -20,11 +20,12 @@ if config.config_file_name is not None:
     fileConfig(config.config_file_name)
 
 target_metadata = get_target_metadata()
+database_url = get_database_url()
 
 
 def run_migrations_offline() -> None:
     context.configure(
-        url=DATABASE_URL,
+        url=database_url,
         target_metadata=target_metadata,
         literal_binds=True,
         dialect_opts={"paramstyle": "named"},
@@ -36,7 +37,7 @@ def run_migrations_offline() -> None:
 
 def run_migrations_online() -> None:
     configuration = config.get_section(config.config_ini_section) or {}
-    configuration["sqlalchemy.url"] = DATABASE_URL
+    configuration["sqlalchemy.url"] = database_url
     connectable = engine_from_config(
         configuration,
         prefix="sqlalchemy.",
