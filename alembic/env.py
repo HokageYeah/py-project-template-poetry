@@ -1,26 +1,28 @@
 from __future__ import annotations
 
+import importlib
+import sys
 from logging.config import fileConfig
 from pathlib import Path
-import sys
+
+from sqlalchemy import engine_from_config, pool
 
 from alembic import context
-from sqlalchemy import engine_from_config, pool
 
 project_root = Path(__file__).resolve().parent.parent
 if str(project_root) not in sys.path:
     sys.path.append(str(project_root))
 
-from app.config.database_config import get_database_url
-from app.db.metadata import get_target_metadata
-
 config = context.config
+
+database_config_module = importlib.import_module("app.config.database_config")
+metadata_module = importlib.import_module("app.db.metadata")
 
 if config.config_file_name is not None:
     fileConfig(config.config_file_name)
 
-target_metadata = get_target_metadata()
-database_url = get_database_url()
+target_metadata = metadata_module.get_target_metadata()
+database_url = database_config_module.get_database_url()
 
 
 def run_migrations_offline() -> None:
